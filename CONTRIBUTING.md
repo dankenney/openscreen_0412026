@@ -30,6 +30,7 @@ Thank you for considering contributing to this project! By contributing, you hel
 - `npm run build:win` keeps the default Windows release behavior.
 - If `electron-builder` fails on Windows while extracting `winCodeSign` because your shell does not have symlink privileges, use `npm run build:win:local` for an NSIS installer or `npm run build:win:local:dir` for an unpacked app directory.
 - These local scripts set `win.signAndEditExecutable=false`, so they are best suited for local testing and QA rather than final release artifacts.
+- The local Windows packaging scripts also stop a running packaged `Openscreen.exe` instance and clean `release/<version>` first, which avoids the common Windows file-lock failure when rebuilding.
 - Release packaging workflows stay on Node `22.22.1`. `electron-builder` currently emits an upstream `[DEP0190]` deprecation warning during packaging on Node 24, so we treat Node 22.22.1 as the stable release-build baseline for now.
 
 6. **Commit Your Changes**
