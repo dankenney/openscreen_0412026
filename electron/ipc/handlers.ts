@@ -213,6 +213,7 @@ function sampleCursorPoint() {
 
 export function registerIpcHandlers(
 	createEditorWindow: () => void,
+	createHudOverlayWindow: () => void,
 	createSourceSelectorWindow: () => BrowserWindow,
 	getMainWindow: () => BrowserWindow | null,
 	getSourceSelectorWindow: () => BrowserWindow | null,
@@ -289,6 +290,10 @@ export function registerIpcHandlers(
 			mainWin.close();
 		}
 		createEditorWindow();
+	});
+
+	ipcMain.handle("switch-to-hud", () => {
+		createHudOverlayWindow();
 	});
 
 	ipcMain.handle("store-recorded-session", async (_, payload: StoreRecordedSessionInput) => {

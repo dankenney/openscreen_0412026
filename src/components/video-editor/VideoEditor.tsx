@@ -464,6 +464,26 @@ export default function VideoEditor() {
 		await saveProject(true);
 	}, [saveProject]);
 
+	const handleOpenVideoFile = useCallback(async () => {
+		const result = await window.electronAPI.openVideoFilePicker();
+
+		if (result.canceled) {
+			return;
+		}
+
+		if (!result.success || !result.path) {
+			toast.error("Failed to open video file");
+			return;
+		}
+
+		await window.electronAPI.setCurrentVideoPath(result.path);
+		window.location.reload();
+	}, []);
+
+	const handleRecordScreen = useCallback(async () => {
+		await window.electronAPI.switchToHud();
+	}, []);
+
 	const handleLoadProject = useCallback(async () => {
 		const result = await window.electronAPI.loadProjectFile();
 
@@ -1379,13 +1399,29 @@ export default function VideoEditor() {
 			<div className="flex items-center justify-center h-screen bg-background">
 				<div className="flex flex-col items-center gap-3">
 					<div className="text-destructive">{error}</div>
-					<button
-						type="button"
-						onClick={handleLoadProject}
-						className="px-3 py-1.5 rounded-md bg-[#34B27B] text-white text-sm hover:bg-[#34B27B]/90"
-					>
-						Load Project File
-					</button>
+					<div className="flex items-center gap-2">
+						<button
+							type="button"
+							onClick={handleRecordScreen}
+							className="px-3 py-1.5 rounded-md bg-[#34B27B] text-white text-sm hover:bg-[#34B27B]/90"
+						>
+							Record Screen
+						</button>
+						<button
+							type="button"
+							onClick={handleOpenVideoFile}
+							className="px-3 py-1.5 rounded-md border border-white/10 bg-white/5 text-white text-sm hover:bg-white/10"
+						>
+							Open Video File
+						</button>
+						<button
+							type="button"
+							onClick={handleLoadProject}
+							className="px-3 py-1.5 rounded-md border border-white/10 bg-white/5 text-white text-sm hover:bg-white/10"
+						>
+							Load Project File
+						</button>
+					</div>
 				</div>
 			</div>
 		);

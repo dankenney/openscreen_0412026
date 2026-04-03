@@ -68,7 +68,12 @@ const defaultTrayIcon = getTrayIcon("openscreen.png");
 const recordingTrayIcon = getTrayIcon("rec-button.png");
 
 function createWindow() {
-	mainWindow = createHudOverlayWindow();
+	if (process.env["HEADLESS"] === "true") {
+		mainWindow = createHudOverlayWindow();
+		return;
+	}
+
+	createEditorWindowWrapper();
 }
 
 function showMainWindow() {
@@ -312,6 +317,17 @@ function createEditorWindowWrapper() {
 	});
 }
 
+function createHudOverlayWindowWrapper() {
+	if (mainWindow) {
+		isForceClosing = true;
+		mainWindow.close();
+		isForceClosing = false;
+		mainWindow = null;
+	}
+	mainWindow = createHudOverlayWindow();
+	editorHasUnsavedChanges = false;
+}
+
 function createSourceSelectorWindowWrapper() {
 	sourceSelectorWindow = createSourceSelectorWindow();
 	sourceSelectorWindow.on("closed", () => {
@@ -373,6 +389,7 @@ app.whenReady().then(async () => {
 
 	registerIpcHandlers(
 		createEditorWindowWrapper,
+		createHudOverlayWindowWrapper,
 		createSourceSelectorWindowWrapper,
 		() => mainWindow,
 		() => sourceSelectorWindow,
