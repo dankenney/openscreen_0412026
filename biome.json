@@ -6,7 +6,7 @@
 		"enabled": true,
 		"indentStyle": "tab",
 		"formatWithErrors": true,
-		"lineEnding": "lf",
+		"lineEnding": "auto",
 		"lineWidth": 100,
 		"attributePosition": "auto"
 	},

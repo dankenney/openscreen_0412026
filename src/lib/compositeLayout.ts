@@ -139,6 +139,10 @@ export function computeCompositeLayout(params: {
 	const webcamWidth = webcamSize?.width;
 	const webcamHeight = webcamSize?.height;
 	const preset = getWebcamLayoutPresetDefinition(layoutPreset);
+	const boundedMaxContentSize = {
+		width: Math.min(maxContentSize.width, canvasWidth),
+		height: Math.min(maxContentSize.height, canvasHeight),
+	};
 
 	if (canvasWidth <= 0 || canvasHeight <= 0 || screenWidth <= 0 || screenHeight <= 0) {
 		return null;
@@ -146,37 +150,43 @@ export function computeCompositeLayout(params: {
 
 	if (preset.transform.type === "stack") {
 		if (!webcamWidth || !webcamHeight || webcamWidth <= 0 || webcamHeight <= 0) {
-			// No webcam — screen fills the entire canvas (cover mode)
 			return {
-				screenRect: { x: 0, y: 0, width: canvasWidth, height: canvasHeight },
+				screenRect: centerRect({
+					canvasSize,
+					size: screenSize,
+					maxSize: boundedMaxContentSize,
+				}),
 				webcamRect: null,
-				screenCover: true,
 			};
 		}
 
-		// Webcam: full width at the bottom, maintaining its aspect ratio
+		const gap = Math.max(0, preset.transform.gap);
+		const screenAspect = screenWidth / screenHeight;
 		const webcamAspect = webcamWidth / webcamHeight;
-		const resolvedWebcamWidth = canvasWidth;
-		const resolvedWebcamHeight = Math.round(canvasWidth / webcamAspect);
-
-		// Screen: fills remaining space at the top (cover mode — may crop sides)
-		const screenRectHeight = canvasHeight - resolvedWebcamHeight;
+		const heightPerWidth = 1 / screenAspect + 1 / webcamAspect;
+		const resolvedWidth = Math.floor(
+			Math.min(boundedMaxContentSize.width, (boundedMaxContentSize.height - gap) / heightPerWidth),
+		);
+		const resolvedScreenHeight = Math.floor(resolvedWidth / screenAspect);
+		const resolvedWebcamHeight = Math.floor(resolvedWidth / webcamAspect);
+		const totalHeight = resolvedScreenHeight + gap + resolvedWebcamHeight;
+		const stackX = Math.max(0, Math.floor((canvasWidth - resolvedWidth) / 2));
+		const stackY = Math.max(0, Math.floor((canvasHeight - totalHeight) / 2));
 
 		return {
 			screenRect: {
-				x: 0,
-				y: 0,
-				width: canvasWidth,
-				height: Math.max(0, screenRectHeight),
+				x: stackX,
+				y: stackY,
+				width: resolvedWidth,
+				height: resolvedScreenHeight,
 			},
 			webcamRect: {
-				x: 0,
-				y: Math.max(0, screenRectHeight),
-				width: resolvedWebcamWidth,
+				x: stackX,
+				y: stackY + resolvedScreenHeight + gap,
+				width: resolvedWidth,
 				height: resolvedWebcamHeight,
 				borderRadius: 0,
 			},
-			screenCover: true,
 		};
 	}
 
@@ -184,7 +194,7 @@ export function computeCompositeLayout(params: {
 	const screenRect = centerRect({
 		canvasSize,
 		size: screenSize,
-		maxSize: maxContentSize,
+		maxSize: boundedMaxContentSize,
 	});
 
 	if (!webcamWidth || !webcamHeight || webcamWidth <= 0 || webcamHeight <= 0) {

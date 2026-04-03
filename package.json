@@ -2,11 +2,13 @@
 	"name": "openscreen",
 	"private": true,
 	"version": "1.2.0",
+	"description": "Free, open-source screen recording and demo editor for creating polished product walkthroughs.",
+	"author": "Siddharth Vaddem",
 	"type": "module",
 	"packageManager": "npm@10.9.4",
 	"engines": {
-		"node": "22.22.1",
-		"npm": "10.9.4"
+		"node": ">=22.22.1 <25",
+		"npm": ">=10.9.4 <12"
 	},
 	"scripts": {
 		"dev": "vite",
@@ -18,6 +20,8 @@
 		"preview": "vite preview",
 		"build:mac": "tsc && vite build && electron-builder --mac",
 		"build:win": "tsc && vite build && electron-builder --win",
+		"build:win:local": "tsc && vite build && electron-builder --win nsis --config.win.signAndEditExecutable=false",
+		"build:win:local:dir": "tsc && vite build && electron-builder --win --dir --config.win.signAndEditExecutable=false",
 		"build:linux": "tsc && vite build && electron-builder --linux",
 		"test": "vitest --run",
 		"test:watch": "vitest",
@@ -79,7 +83,6 @@
 		"electron": "^39.2.7",
 		"electron-builder": "^26.7.0",
 		"electron-icon-builder": "^2.0.1",
-		"electron-rebuild": "^3.2.9",
 		"fast-check": "^4.5.2",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.3.2",
