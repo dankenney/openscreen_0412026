@@ -17,6 +17,14 @@ import { registerIpcHandlers } from "./ipc/handlers";
 import { createEditorWindow, createHudOverlayWindow, createSourceSelectorWindow } from "./windows";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const APP_ID = "com.siddharthvaddem.openscreen";
+const APP_NAME = "OpenScreen";
+
+app.setName(APP_NAME);
+
+if (process.platform === "win32") {
+	app.setAppUserModelId(APP_ID);
+}
 
 // Use Screen & System Audio Recording permissions instead of CoreAudio Tap API on macOS.
 // CoreAudio Tap requires NSAudioCaptureUsageDescription in the parent app's Info.plist,
@@ -217,7 +225,7 @@ function getTrayIcon(filename: string) {
 function updateTrayMenu(recording: boolean = false) {
 	if (!tray) return;
 	const trayIcon = recording ? recordingTrayIcon : defaultTrayIcon;
-	const trayToolTip = recording ? `Recording: ${selectedSourceName}` : "OpenScreen";
+	const trayToolTip = recording ? `Recording: ${selectedSourceName}` : APP_NAME;
 	const menuTemplate = recording
 		? [
 				{

@@ -47,7 +47,7 @@ Download the latest installer for your platform from the [GitHub Releases](https
 If you encounter issues with macOS Gatekeeper blocking the app (since it does not come with a developer certificate), you can bypass this by running the following command in your terminal after installation:
 
 ```bash
-xattr -rd com.apple.quarantine /Applications/Openscreen.app
+xattr -rd com.apple.quarantine /Applications/OpenScreen.app
 ```
 
 Note: Give your terminal Full Disk Access in **System Settings > Privacy & Security** to grant you access and then run the above command.
@@ -59,15 +59,15 @@ After running this command, proceed to **System Preferences > Security & Privacy
 Download the `.AppImage` file from the releases page. Make it executable and run:
 
 ```bash
-chmod +x Openscreen-Linux-*.AppImage
-./Openscreen-Linux-*.AppImage
+chmod +x OpenScreen-Linux-*.AppImage
+./OpenScreen-Linux-*.AppImage
 ```
 
 You may need to grant screen recording permissions depending on your desktop environment.
 
 **Note:** If the app fails to launch due to a "sandbox" error, run it with --no-sandbox:
 ```bash
-./Openscreen-Linux-*.AppImage --no-sandbox
+./OpenScreen-Linux-*.AppImage --no-sandbox
 ```
 
 ### Limitations

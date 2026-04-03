@@ -3,7 +3,7 @@
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
   "appId": "com.siddharthvaddem.openscreen",
   "asar": true,
-  "productName": "Openscreen",
+  "productName": "OpenScreen",
   "npmRebuild": true,
   "buildDependenciesFromSource": true,
   "compression": "normal",
@@ -61,6 +61,11 @@
   },
   "nsis": {
     "oneClick": false,
-    "allowToChangeInstallationDirectory": true
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": "always",
+    "createStartMenuShortcut": true,
+    "shortcutName": "OpenScreen",
+    "uninstallDisplayName": "OpenScreen",
+    "runAfterFinish": true
   }
 }

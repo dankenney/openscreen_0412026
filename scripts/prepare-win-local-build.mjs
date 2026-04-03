@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(scriptDir, "..");
 const releaseRoot = path.join(rootDir, "release");
+const PACKAGED_EXECUTABLE_NAMES = ["OpenScreen.exe", "Openscreen.exe"];
 
 function ensureWithinReleaseRoot(targetPath) {
 	const resolvedTarget = path.resolve(targetPath);
@@ -37,28 +38,41 @@ function stopRunningPackagedApp() {
 		return;
 	}
 
-	const result = spawnSync("taskkill", ["/IM", "Openscreen.exe", "/F", "/T"], {
-		encoding: "utf-8",
-		stdio: "pipe",
-	});
+	let stoppedAnyProcess = false;
+	const unexpectedErrors = [];
 
-	if (result.status === 0) {
-		console.log("Stopped running Openscreen.exe processes before packaging.");
+	for (const executableName of PACKAGED_EXECUTABLE_NAMES) {
+		const result = spawnSync("taskkill", ["/IM", executableName, "/F", "/T"], {
+			encoding: "utf-8",
+			stdio: "pipe",
+		});
+
+		if (result.status === 0) {
+			stoppedAnyProcess = true;
+			console.log(`Stopped running ${executableName} before packaging.`);
+			continue;
+		}
+
+		const output = `${result.stdout ?? ""}\n${result.stderr ?? ""}`.trim();
+		const processNotRunning =
+			/no running instance/i.test(output) ||
+			/not found/i.test(output) ||
+			/cannot find the process/i.test(output);
+
+		if (!processNotRunning) {
+			unexpectedErrors.push(output || `Failed to stop ${executableName} before packaging.`);
+		}
+	}
+
+	if (unexpectedErrors.length > 0) {
+		throw new Error(unexpectedErrors.join("\n\n"));
+	}
+
+	if (stoppedAnyProcess) {
 		return;
 	}
 
-	const output = `${result.stdout ?? ""}\n${result.stderr ?? ""}`.trim();
-	const processNotRunning =
-		/no running instance/i.test(output) ||
-		/not found/i.test(output) ||
-		/cannot find the process/i.test(output);
-
-	if (processNotRunning) {
-		console.log("No running Openscreen.exe process found.");
-		return;
-	}
-
-	throw new Error(output || "Failed to stop Openscreen.exe before packaging.");
+	console.log("No running OpenScreen.exe or Openscreen.exe process found.");
 }
 
 async function removePreviousRelease(version) {
